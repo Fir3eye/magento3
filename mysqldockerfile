@@ -1,0 +1,14 @@
+# Use an official MySQL image as a base image
+FROM mysql:latest
+
+# Set environment variables for MySQL configuration
+ENV MYSQL_ROOT_PASSWORD=admin
+ENV MYSQL_DATABASE=magentodb
+ENV MYSQL_USER=magentouser
+ENV MYSQL_PASSWORD=MyPassword
+
+# Copy SQL script to initialize the database (if needed)
+COPY ./dump.sql /docker-entrypoint-initdb.d/
+
+# Expose MySQL default port
+EXPOSE 3306
