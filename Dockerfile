@@ -42,7 +42,25 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     pdo \
     pdo_pgsql \
     pgsql \
-    ldap
+    ldap \
+    php-sockets
+
+# Install Elasticsearch
+RUN apt-get update && apt-get install -y gnupg wget \
+    && wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list \
+    && apt-get update && apt-get install -y elasticsearch
+# Configure Elasticsearch
+RUN echo "xpack.security.enabled: false" >> /etc/elasticsearch/elasticsearch.yml
+
+# Start Elasticsearch
+CMD ["elasticsearch"]
+
+# Configure Elasticsearch
+RUN echo "xpack.security.enabled: false" >> /etc/elasticsearch/elasticsearch.yml
+
+# Expose Elasticsearch port
+EXPOSE 9200
 
 # Enable Apache modules and set document root
 RUN a2enmod rewrite && \
