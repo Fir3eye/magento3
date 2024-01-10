@@ -43,7 +43,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     pdo_pgsql \
     pgsql \
     ldap \
-    php-sockets
+    sockets
 
 # Install Elasticsearch
 RUN apt-get update && apt-get install -y gnupg wget \
