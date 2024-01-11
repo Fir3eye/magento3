@@ -30,17 +30,6 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j$(nproc) \
     bcmath \
-    ctype \
-    dom \
-    hash \
-    iconv \
-    intl \
-    mbstring \
-    openssl \
-    simplexml \
-    xml \
-    xmlreader \
-    xmlwriter \
     gd \
     intl \
     pdo_mysql \
