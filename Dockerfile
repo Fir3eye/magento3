@@ -41,7 +41,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     xml \
     xmlreader \
     xmlwriter \
-    libdml \
     gd \
     intl \
     pdo_mysql \
