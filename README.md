@@ -160,3 +160,9 @@ EXPOSE 80
 # Start the PHP FPM server
 CMD ["apache2-foreground"]
 ```
+
+### when face symlink problem in magento use below command 
+
+```
+php -dmemory_limit=-1 bin/magento setup:upgrade
+```
