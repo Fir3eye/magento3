@@ -6,3 +6,5 @@ dump.sql
 nginx.conf.sample
 auth.json.sample
 mysqldockerfile
+LICENSE.txt
+COPYING.txt
