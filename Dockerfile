@@ -113,8 +113,9 @@ RUN php -dmemory_limit=-1 bin/magento setup:install \
 RUN php bin/magento module:disable Magento_TwoFactorAuth
 RUN php bin/magento module:disable Magento_AdminAdobeImsTwoFactorAuth
 
-# Install Magento 
-RUN php -dmemory_limit=-1 bin/magento setup:install
+# Install Magento # Use the shell form of the RUN command and provide the absolute path to PHP
+RUN ["/bin/sh", "-c", "/var/www/html/bin/magento setup:install"]
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 777 /var/www/html/generated
