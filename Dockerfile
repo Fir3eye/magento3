@@ -1,4 +1,6 @@
+# Use PHP 8.1 FPM image
 FROM php:8.1-apache
+
 
 # Install required dependencies
 RUN apt-get update && apt-get install -y \
@@ -45,32 +47,13 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     ldap \
     sockets
 
-# Install Elasticsearch
-RUN apt-get update && apt-get install -y gnupg wget \
-    && wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list \
-    && apt-get update && apt-get install -y elasticsearch
-# Configure Elasticsearch
-RUN echo "xpack.security.enabled: false" >> /etc/elasticsearch/elasticsearch.yml
 
-# Start Elasticsearch
-CMD ["elasticsearch"]
-
-# Configure Elasticsearch
-RUN echo "xpack.security.enabled: false" >> /etc/elasticsearch/elasticsearch.yml
-
-# Expose Elasticsearch port
-EXPOSE 9200
-
-# Enable Apache modules and set document root
-RUN a2enmod rewrite && \
-    a2enmod headers && \
-    a2enmod expires && \
-    a2enmod ssl && \
-    a2ensite default-ssl
+# Enable Apache modules
+RUN a2enmod rewrite headers expires ssl
 
 # Set ServerName directive
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 
 # Download and install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -80,33 +63,64 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV APACHE_DOCUMENT_ROOT /var/www/html
 
-# Copy Magento source code from the local machine to the image
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Use arguments to pass keys during build
+ARG MAGENTO_PUBLIC_KEY
+ARG MAGENTO_PRIVATE_KEY
+
+# Set environment variable for Composer
+ENV COMPOSER_AUTH="{\"http-basic\":{\"repo.magento.com\":{\"username\":\"${MAGENTO_PUBLIC_KEY}\",\"password\":\"${MAGENTO_PRIVATE_KEY}\"}}}"
+
+# Copy Magento code into the container
+# Skip this if you're using Composer to install Magento
 COPY . /var/www/html
 
-# Install Magento dependencies
+# Set working directory
 WORKDIR /var/www/html
 
-RUN chmod -R 777 /var/www/html/var
+ 
+
+#RUN find var generated vendor pub/static pub/media app/etc -type f -exec chmod g+w {} + 
+#RUN find var generated vendor pub/static pub/media app/etc -type d -exec chmod g+ws {} +
+
+# Run the Magento setup command
+RUN php -dmemory_limit=-1 bin/magento setup:install \
+    --base-url=http://localhost:8080/ \
+    --db-host=db \
+    --db-name=magentodb \
+    --db-user=magentouser \
+    --db-password=MyPassword \
+    --admin-firstname=Admin \
+    --admin-lastname=User \
+    --admin-email=admin@your-domain.com \
+    --admin-user=admin \
+    --admin-password=admin123 \
+    --language=en_US \
+    --currency=USD \
+    --timezone=America/Chicago \
+    --use-rewrites=1 \
+    --search-engine=elasticsearch7 \
+    --elasticsearch-host=elasticsearch \
+    --elasticsearch-port=9200 \
+    --elasticsearch-index-prefix=magento2 \
+    --elasticsearch-enable-auth=0 \
+    --elasticsearch-timeout=15
+
+# Disable Two-Factor Authentication
+RUN php bin/magento module:disable Magento_TwoFactorAuth
+RUN php bin/magento module:disable Magento_AdminAdobeImsTwoFactorAuth
+
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 777 /var/www/html/generated
+RUN chmod -R 777 /var/www/html/var
+RUN chmod -R 777 /var/www/html/vendor 
 
-
-# Enable Apache SSL module
-RUN a2enmod ssl
-
-# Install ssl-cert package
-RUN apt-get update && apt-get install -y ssl-cert
-
-# Generate snakeoil certificate
-RUN make-ssl-cert generate-default-snakeoil --force-overwrite
-
-# Restart Apache
-RUN service apache2 restart
-
-
-
-# Expose ports
+# Expose the port Magento is reachable on
 EXPOSE 80
-EXPOSE 443
 
-# Start Apache
+# Start the PHP FPM server
 CMD ["apache2-foreground"]
