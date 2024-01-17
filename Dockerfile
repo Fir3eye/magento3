@@ -88,14 +88,35 @@ WORKDIR /var/www/html
 
 
 # Disable Two-Factor Authentication
-#RUN php bin/magento module:disable Magento_TwoFactorAuth
+RUN php bin/magento module:disable Magento_TwoFactorAuth
 RUN php bin/magento module:disable Magento_AdminAdobeImsTwoFactorAuth
 
-# Install Magento # Use the shell form of the RUN command and provide the absolute path to PHP
-#RUN ["/bin/sh", "-c", "/var/www/html/bin/magento setup:install"]
-#CMD ["/bin/sh", "-c", "/var/www/html/bin/magento setup:install"]
+# Run the specific Magento setup:install command during the container build
+CMD ["/bin/sh", "-c", "php -dmemory_limit=-1 bin/magento setup:install \
+    --base-url=http://${SERVER_IP}:8080/ \
+    --db-host=db \
+    --db-name=magentodb \
+    --db-user=magentouser \
+    --db-password=MyPassword \
+    --admin-firstname=Admin \
+    --admin-lastname=User \
+    --admin-email=admin@your-domain.com \
+    --admin-user=admin \
+    --admin-password=admin123 \
+    --language=en_US \
+    --currency=USD \
+    --timezone=America/Chicago \
+    --use-rewrites=1 \
+    --search-engine=elasticsearch7 \
+    --elasticsearch-host=elasticsearch \
+    --elasticsearch-port=9200 \
+    --elasticsearch-index-prefix=magento2 \
+    --elasticsearch-enable-auth=0 \
+    --elasticsearch-timeout=15"]
 
-# Set permissions
+
+
+#  Set permissions
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 777 /var/www/html/generated
 RUN chmod -R 777 /var/www/html/var
