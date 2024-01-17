@@ -86,35 +86,14 @@ WORKDIR /var/www/html
 #RUN find var generated vendor pub/static pub/media app/etc -type f -exec chmod g+w {} + 
 #RUN find var generated vendor pub/static pub/media app/etc -type d -exec chmod g+ws {} +
 
-# Run the Magento setup command
-RUN php -dmemory_limit=-1 bin/magento setup:install \
-    --base-url=http://localhost:8080/ \
-    --db-host=db \
-    --db-name=magentodb \
-    --db-user=magentouser \
-    --db-password=MyPassword \
-    --admin-firstname=Admin \
-    --admin-lastname=User \
-    --admin-email=admin@your-domain.com \
-    --admin-user=admin \
-    --admin-password=admin123 \
-    --language=en_US \
-    --currency=USD \
-    --timezone=America/Chicago \
-    --use-rewrites=1 \
-    --search-engine=elasticsearch7 \
-    --elasticsearch-host=elasticsearch \
-    --elasticsearch-port=9200 \
-    --elasticsearch-index-prefix=magento2 \
-    --elasticsearch-enable-auth=0 \
-    --elasticsearch-timeout=15
 
 # Disable Two-Factor Authentication
-RUN php bin/magento module:disable Magento_TwoFactorAuth
+#RUN php bin/magento module:disable Magento_TwoFactorAuth
 RUN php bin/magento module:disable Magento_AdminAdobeImsTwoFactorAuth
 
 # Install Magento # Use the shell form of the RUN command and provide the absolute path to PHP
-RUN ["/bin/sh", "-c", "/var/www/html/bin/magento setup:install"]
+#RUN ["/bin/sh", "-c", "/var/www/html/bin/magento setup:install"]
+#CMD ["/bin/sh", "-c", "/var/www/html/bin/magento setup:install"]
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
