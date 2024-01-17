@@ -24,6 +24,13 @@ php -dmemory_limit=-1 bin/magento setup:install \
     --elasticsearch-index-prefix=magento2 \
     --elasticsearch-enable-auth=0 \
     --elasticsearch-timeout=15
+    
+
+# Set permissions on a specific directory
+chmod -R 777 /var/www/html/var
+chmod -R 777 /var/www/html/generator
+chmod -R 777 /var/www/html/vendor
+
 
 # Start Apache (or your web server) in the foreground
 exec apache2-foreground
