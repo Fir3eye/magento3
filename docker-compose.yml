@@ -1,22 +1,19 @@
-version: '3'
-
 services:
   # MySQL database for Magento
   db:
     image: mysql:5.7
-    container_name: mysql
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_DATABASE: magentodb
       MYSQL_USER: magentouser
       MYSQL_PASSWORD: MyPassword
       MYSQL_ROOT_PASSWORD: admin
-    volumes:
-      - magento-db-data:/var/lib/mysql
 
   # Magento web server
   magento:
-    image: fir3eye/magento:v2
-    container_name: magento_app
+    image: fir3eye/magento:v7
+    container_name: magento_ap
     ports:
       - "8080:80"
     depends_on:
@@ -29,20 +26,22 @@ services:
       MAGENTO_ADMIN_USER: admin
       MAGENTO_ADMIN_PASSWORD: admin123
       MAGENTO_ADMIN_EMAIL: admin@example.com
-      SERVER_IP: http://localhost:8080/
-#    volumes:
- #     - magento-data:/var/www/html
+      SERVER_IP: <your_server_ip>
 
-  # Elasticsearch
+    entrypoint: /var/www/html/run.sh
+#    volumes:
+ #     - magento-db:/var/www/html
+  #    - var/www/html/app
   elasticsearch:
     image: elasticsearch:7.17.6
     container_name: elasticsearch
+    restart: always
     environment:
       - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
     ports:
       - "9200:9200"
-      
 #volumes:
- # magento-db-data:
-  #magento-data:
-  
+#  magento-db:
