@@ -1,0 +1,8 @@
+.git
+.gitignore
+README.md
+*.md
+dump.sql
+nginx.conf.sample
+auth.json.sample
+mysqldockerfile
