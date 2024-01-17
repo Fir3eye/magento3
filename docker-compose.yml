@@ -3,7 +3,7 @@ version: '3'
 services:
   # MySQL database for Magento
   db:
-    image: dockt35t/mysql:latest
+    image: mysql:5.7
     environment:
       MYSQL_DATABASE: magentodb
       MYSQL_USER: magentouser
@@ -14,7 +14,7 @@ services:
 
   # Magento web server
   magento:
-    image: dockt35t/magento:latest
+    image: fir3eye/magento:v2
     ports:
       - "8080:80"
     depends_on:
@@ -31,6 +31,14 @@ services:
     volumes:
       - magento-data:/var/www/html
 
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      
 volumes:
   magento-db-data:
   magento-data:
