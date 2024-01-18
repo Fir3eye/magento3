@@ -24,8 +24,8 @@ php -dmemory_limit=-1 bin/magento setup:install \
     --elasticsearch-port=9200 \
     --elasticsearch-index-prefix=magento2 \
     --elasticsearch-enable-auth=0 \
-    --elasticsearch-timeout=15
-    
+    --elasticsearch-timeout=15  && \
+    bin/magento setup:upgrade        
 
 # Start Apache (or your web server) in the foreground
 exec apache2-foreground
