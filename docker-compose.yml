@@ -26,7 +26,7 @@ services:
       MAGENTO_ADMIN_USER: admin
       MAGENTO_ADMIN_PASSWORD: admin123
       MAGENTO_ADMIN_EMAIL: admin@example.com
-      SERVER_IP: <your_server_ip>
+      SERVER_IP: 65.0.204.224
 
     entrypoint: /var/www/html/run.sh
 #    volumes:
