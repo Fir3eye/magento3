@@ -107,12 +107,15 @@ CMD ["/bin/sh", "-c", "php -dmemory_limit=-1 bin/magento setup:install \
     --currency=USD \
     --timezone=America/Chicago \
     --use-rewrites=1 \
+    --backend-frontname=admin \
     --search-engine=elasticsearch7 \
     --elasticsearch-host=elasticsearch \
     --elasticsearch-port=9200 \
     --elasticsearch-index-prefix=magento2 \
     --elasticsearch-enable-auth=0 \
     --elasticsearch-timeout=15"]
+
+CMD ["/bin/sh", "-c", "php -dmemory_limit=-1 bin/magento setup:upgrade"]
 
 
 
@@ -121,6 +124,7 @@ RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 777 /var/www/html/generated
 RUN chmod -R 777 /var/www/html/var
 RUN chmod -R 777 /var/www/html/vendor 
+RUN chmod +x /var/www/html/run.sh
 
 # Expose the port Magento is reachable on
 EXPOSE 80
