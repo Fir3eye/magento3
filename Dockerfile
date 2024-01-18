@@ -107,6 +107,7 @@ CMD ["/bin/sh", "-c", "php -dmemory_limit=-1 bin/magento setup:install \
     --currency=USD \
     --timezone=America/Chicago \
     --use-rewrites=1 \
+    --backend-frontname="admin" \
     --search-engine=elasticsearch7 \
     --elasticsearch-host=elasticsearch \
     --elasticsearch-port=9200 \
