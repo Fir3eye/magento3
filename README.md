@@ -45,3 +45,10 @@ chmod -R 777 /var/www/html/var
 chmod -r 777 /var/www/html/generated
 ```
 
+## 🕹️ You Can face the Problem while github action Pipeline Use below command 
+```
+sudo chown -R ubuntu:ubuntu /var/www/html
+```
+```
+sudo usermod -aG docker ubuntu
+```
