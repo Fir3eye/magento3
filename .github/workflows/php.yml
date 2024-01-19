@@ -25,7 +25,7 @@ jobs:
           REMOTE_PORT: 22
           TARGET: /var/www/html  # Change to your target directory on EC2
           ARGS: "-avz"           # rsync options for syncing a single file
-          SOURCE: "docker-compose.yml"  # Sync only docker-compose.yml
+          SOURCE: "./"  # Sync only docker-compose.yml
           REMOTE_HOST: ${{ secrets.EC2_HOST }}   # EC2 IP or hostname
           REMOTE_USER: ubuntu                     # EC2 username
         env:
