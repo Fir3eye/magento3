@@ -12,7 +12,7 @@ services:
 
   # Magento web server
   magento:
-    image: fir3eye/magento:v7
+    image: fir3eye/magento:latest
     container_name: magento_ap
     ports:
       - "8080:80"
