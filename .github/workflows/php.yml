@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master ]  # Change to 'main' if your default branch is named 'main'
 
 jobs:
   build-and-deploy:
@@ -28,4 +28,4 @@ jobs:
         ssh -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
         docker-compose -f /var/www/html/docker-compose.yml pull
         docker-compose -f /var/www/html/docker-compose.yml up -d
-    "
+        "
