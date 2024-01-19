@@ -39,4 +39,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/html
+            docker-compose down --volume
             docker-compose up -d
