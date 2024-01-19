@@ -1,52 +1,47 @@
-name: CI/CD Pipeline
+name: Deploy to EC2 with Docker
 
 on:
   push:
-    branches: [ master ]  # Change to 'main' if your default branch is named 'main'
+    branches:
+      - master  # Trigger on pushes to main branch, change as needed
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check Out Repo
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Install SSH client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ssh-client
 
-    - name: Build and Push Docker Images
-      run: |
-        docker-compose build
-        docker-compose push
+      - name: Sync Files to EC2
+        uses: easingthemes/ssh-deploy@v2.1.5
+        with:
+          REMOTE_PORT: 22
+          TARGET: /var/www/html  # Change to your target directory on EC2
+          ARGS: "-rltgoDzvO"     # rsync options
+          SOURCE: "./"           # Sync entire repo, change if needed
+          REMOTE_HOST: ${{ secrets.EC2_HOST }}   # EC2 IP or hostname
+          REMOTE_USER: ubuntu                     # EC2 username
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # SSH key secret
 
-    - name: List directory contents
-      run: ls -la
-
-    - name: Set up SSH key
-      run: |
-        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" 
-    
-    - name: Sync Files to EC2
-      uses: easingthemes/ssh-deploy@v2.1.5
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-        SOURCE: "./"
-        TARGET: "/var/www/html"
-        HOST: ${{ secrets.EC2_HOST }}
-        USERNAME: ubuntu
-        PORT: 22
-    - name: Execute deployment script (if you have one)
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-          cd /var/www/html
-          docker-compose pull
-          docker-compose up -d
+      - name: Execute Docker Compose on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/html
+            docker-compose up -d 
