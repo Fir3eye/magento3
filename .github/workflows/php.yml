@@ -1,39 +1,34 @@
-name: Deploy Magento Application
+name: Deploy to EC2
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-      - name: Pull Docker Compose Services
-        run: docker-compose pull
+    - name: Build and push Docker images
+      run: |
+        docker-compose build
+        docker-compose push
 
-      - name: Run Docker Compose
-        run: docker-compose up -d
-
-      - name: Wait for Magento to Start
-        run: |
-          sleep 60 # Adjust the sleep duration based on your application's startup time
-
-      - name: Deploy to Cloud (AWS Elastic Beanstalk)
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          eb create your-environment-name
-
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd /path/to/your/project
+          docker-compose pull
+          docker-compose down
+          docker-compose up -d
