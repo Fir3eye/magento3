@@ -12,16 +12,6 @@ jobs:
     - name: Check Out Repo
       uses: actions/checkout@v2
 
-    - name: Sync Files to EC2
-      uses: easingthemes/ssh-deploy@v2.1.5
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        SOURCE: "./"
-        TARGET: "/var/www/html"
-        HOST: ${{ secrets.PROD_HOST }}
-        USERNAME: ubuntu
-        PORT: 22
-
     - name: Log in to Docker Hub
       uses: docker/login-action@v1
       with:
@@ -40,6 +30,15 @@ jobs:
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" 
 
+    - name: Sync Files to EC2
+      uses: easingthemes/ssh-deploy@v2.1.5
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SOURCE: "./"
+        TARGET: "/var/www/html"
+        HOST: ${{ secrets.PROD_HOST }}
+        USERNAME: ubuntu
+        PORT: 22
     - name: Execute deployment script (if you have one)
       uses: appleboy/ssh-action@master
       with:
