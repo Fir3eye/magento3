@@ -22,12 +22,22 @@ jobs:
       run: |
         docker-compose build
         docker-compose push
-        
+
     - name: Set up SSH key
       run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" 
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.PROD_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Executing multiple commands
+    - name: List directory contents
+      run: ls -la
+
+    # - name: Set up SSH key
+    #   run: |
+    #     echo "${{ secrets.SSH_PRIVATE_KEY }}" 
+
+    - name: Deploy on EC2
       uses: appleboy/ssh-action@v0.1.6
       with:
           host: ${{ secrets.PROD_HOST }}
