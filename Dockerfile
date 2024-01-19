@@ -121,6 +121,7 @@ RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 777 /var/www/html/generated
 RUN chmod -R 777 /var/www/html/var
 RUN chmod -R 777 /var/www/html/vendor 
+COPY run.sh /var/www/html/
 RUN chmod +x /var/www/html/run.sh
 
 # Expose the port Magento is reachable on
