@@ -31,6 +31,6 @@ jobs:
     - name: Deploy to Server
       run: |
         ssh -i private_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
-        docker-compose -f /var/www/html/docker-compose.yml pull
-        docker-compose -f /var/www/html/docker-compose.yml up -d
+        docker-compose -f /home/ubuntu/magento3/docker-compose.yml pull
+        docker-compose -f /home/ubuntu/magento3/docker-compose.yml up -d
         "
