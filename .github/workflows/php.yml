@@ -27,12 +27,14 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
 
       - name: Use Private Key
-        run: | 
-        echo "$PRIVATE_KEY" > private_key.pem
-        # Use the private key as needed in your workflow
-        # Example: ssh-add private_key.pem
+        run: |
+          echo "$PRIVATE_KEY" > private_key.pem
+          # Use the private key as needed in your workflow
+          # Example: ssh-add private_key.pem
         env:
           PRIVATE_KEY: ${{ secrets.YOUR_PRIVATE_KEY_SECRET }}
-          script: |
-            docker-compose pull
-            docker-compose up -d
+
+      - name: Docker Compose Pull and Up
+        run: |
+          docker-compose pull
+          docker-compose up -d
