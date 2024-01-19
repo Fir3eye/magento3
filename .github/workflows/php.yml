@@ -28,7 +28,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd /path/to/your/project
+          cd /home/ubuntu/magento
           docker-compose pull
           docker-compose down
           docker-compose up -d
