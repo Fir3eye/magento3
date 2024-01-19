@@ -2,13 +2,12 @@ name: Deploy Magento Application
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -19,22 +18,22 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Deploy Application
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
+      - name: Pull Docker Compose Services
+        run: docker-compose pull
 
-      - name: Use Private Key
+      - name: Run Docker Compose
+        run: docker-compose up -d
+
+      - name: Wait for Magento to Start
         run: |
-          echo "$PRIVATE_KEY" > private_key.pem
-          # Use the private key as needed in your workflow
-          # Example: ssh-add private_key.pem
+          sleep 60 # Adjust the sleep duration based on your application's startup time
+
+      - name: Deploy to Cloud (AWS Elastic Beanstalk)
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          eb create your-environment-name
+
         env:
-          PRIVATE_KEY: ${{ secrets.YOUR_PRIVATE_KEY_SECRET }}
-
-      - name: Docker Compose Pull and Up
-        run: |
-          docker-compose pull
-          docker-compose up -d
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
