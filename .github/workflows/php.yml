@@ -22,10 +22,15 @@ jobs:
       run: |
         docker-compose build
         docker-compose push
+        
+    - name: Set up SSH key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+        chmod 600 private_key
 
     - name: Deploy to Server
       run: |
-        ssh -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+        ssh -i private_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
         docker-compose -f /var/www/html/docker-compose.yml pull
         docker-compose -f /var/www/html/docker-compose.yml up -d
         "
