@@ -28,23 +28,23 @@ jobs:
 
     - name: Set up SSH key
       run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" 
-
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" 
+    
     - name: Sync Files to EC2
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         SOURCE: "./"
         TARGET: "/var/www/html"
-        HOST: ${{ secrets.PROD_HOST }}
+        HOST: ${{ secrets.EC2_HOST }}
         USERNAME: ubuntu
         PORT: 22
     - name: Execute deployment script (if you have one)
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.PROD_HOST }}
+        host: ${{ secrets.EC2_HOST }}
         username: ubuntu
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         port: 22
         script: |
           cd /var/www/html
