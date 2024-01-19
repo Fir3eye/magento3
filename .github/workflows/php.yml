@@ -25,12 +25,14 @@ jobs:
         
     - name: Set up SSH key
       run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
-        chmod 700 private_key
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" 
 
-    - name: Deploy to Server
-      run: |
-        ssh -i private_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
-        docker-compose -f /var/www/html/docker-compose.yaml pull
-        docker-compose -f /var/www/html/docker-compose.yaml up -d
-        "
+    - name: Executing multiple commands
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker-compose pull
+            docker-compose up -d
