@@ -13,8 +13,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       
-      - name: Set Execute Permission for run.sh
-        run: chmod +x /var/www/html/run.sh
+      
       
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
@@ -42,5 +41,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/html
+            chmod +x /var/www/html/run.sh
             docker-compose down --volume
             docker-compose up -d
