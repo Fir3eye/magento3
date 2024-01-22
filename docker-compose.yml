@@ -29,8 +29,8 @@ services:
       SERVER_IP: 35.154.23.28
 
     entrypoint: /var/www/html/run.sh
-#    volumes:
- #     - magento-db:/var/www/html
+    volumes:
+      - .:/var/www/html
   #    - var/www/html/app
   elasticsearch:
     image: elasticsearch:7.17.6
