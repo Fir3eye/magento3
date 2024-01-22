@@ -13,17 +13,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       
-      - name: Build and Push Docker image
-        run: |
-          docker build -t dockt35t/magento:t1 .
-          echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-          docker push dockt35t/magento:t1
+     
       
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -t dockt35t/magento:t1 .
+          docker push dockt35t/magento:t1
 
       - name: Sync docker-compose.yml to EC2
         uses: easingthemes/ssh-deploy@v2.1.5
