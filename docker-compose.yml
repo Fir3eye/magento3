@@ -12,7 +12,7 @@ services:
 
   # Magento web server
   magento:
-    image: dockt35t/magento:v1
+    image: dockt35t/magento:t1
     container_name: magento_ap
     ports:
       - "8080:80"
@@ -29,8 +29,8 @@ services:
       SERVER_IP: 35.154.23.28
 
     entrypoint: /var/www/html/run.sh
-    volumes:
-      - .:/var/www/html
+   # volumes:
+ #     - .:/var/www/html
   #    - var/www/html/app
   elasticsearch:
     image: elasticsearch:7.17.6
